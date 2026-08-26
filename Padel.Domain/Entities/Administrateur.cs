@@ -10,6 +10,6 @@ namespace Padel.Domain.Entities;
 public class Administrateur
 {
     public string Matricule { get; set; } = string.Empty;
-    public TypeAdmin Type { get; set; }
+    public required TypeAdmin Type { get; set; }
     public int? SiteId { get; set; }  // null pour Global
 }
