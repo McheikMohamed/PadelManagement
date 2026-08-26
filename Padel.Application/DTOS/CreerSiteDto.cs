@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Padel.Application.DTOS
 {
-    internal class CreerSiteDto
+    public class CreerSiteDto
     {
     }
 }
