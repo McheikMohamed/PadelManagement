@@ -74,6 +74,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<Padel.Api.Middleware.ErrorHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseMiddleware<Padel.Api.Middleware.MatriculeAuthMiddleware>();
 app.UseAuthorization();
