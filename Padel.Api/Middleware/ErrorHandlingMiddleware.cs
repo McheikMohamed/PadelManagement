@@ -68,10 +68,12 @@ public class ErrorHandlingMiddleware
         "PERIMETRE_SITE" => HttpStatusCode.Forbidden,
         "ACTION_RESERVEE_GLOBAL" => HttpStatusCode.Forbidden,
         "INSCRIPTION_NON_AUTORISEE" => HttpStatusCode.Forbidden,
+        "PAIEMENT_NON_AUTORISE" => HttpStatusCode.Forbidden,
         "MEMBRE_INCONNU" => HttpStatusCode.NotFound,
         "TERRAIN_INCONNU" => HttpStatusCode.NotFound,
         "MATCH_INCONNU" => HttpStatusCode.NotFound,
         "APPELANT_INCONNU" => HttpStatusCode.NotFound,
+        "INSCRIPTION_INCONNUE" => HttpStatusCode.NotFound,
         _ => HttpStatusCode.BadRequest
     };
 }
