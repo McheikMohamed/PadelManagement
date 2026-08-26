@@ -69,4 +69,19 @@ public class ReservationsController : ControllerBase
         await _reservationService.DesinscrireJoueurAsync(matchId, membreMatricule, identite.Matricule);
         return NoContent();
     }
+
+    [HttpGet("matchs-publics")]
+    public async Task<ActionResult<List<MatchPublicDto>>> ListerMatchsPublics([FromQuery] int? siteId)
+    {
+        var resultat = await _reservationService.ListerMatchsPublicsAsync(siteId);
+        return Ok(resultat);
+    }
+
+    [HttpGet("mes-reservations")]
+    public async Task<ActionResult<List<MaReservationDto>>> ListerMesReservations()
+    {
+        var identite = (IdentiteAppelant)HttpContext.Items["Identite"]!;
+        var resultat = await _reservationService.ListerMesReservationsAsync(identite.Matricule);
+        return Ok(resultat);
+    }
 }

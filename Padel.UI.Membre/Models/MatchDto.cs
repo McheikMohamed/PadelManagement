@@ -1,15 +1,12 @@
-﻿using Padel.Domain.Enums;
+﻿namespace Padel.UI.Membre.Models;
 
-namespace Padel.Domain.Entities;
-
-public class Match
+public class MatchDto
 {
     public int MatchId { get; set; }
     public int TerrainId { get; set; }
     public string OrganisateurMatricule { get; set; } = string.Empty;
     public DateTime DateHeureDebut { get; set; }
     public DateTime DateHeureFin { get; set; }
-    public StatutMatch Statut { get; set; }
-    public decimal Prix { get; set; } = 60m;
-    public bool PenaliteTraitee { get; set; }
+    public string Statut { get; set; } = string.Empty;
+    public decimal Prix { get; set; }
 }

@@ -73,4 +73,17 @@ public class MatchRepository : IMatchRepository
         await _context.Database.ExecuteSqlInterpolatedAsync(
             $"EXEC sch_Padel.SP_DesinscrireJoueur @MatchId = {matchId}, @MembreMatricule = {membreMatricule}, @AppelantMatricule = {appelantMatricule}");
     }
+
+    public async Task<List<MatchPublicDto>> ListerMatchsPublicsAsync(int? siteId)
+    {
+        return await _context.Database
+            .SqlQuery<MatchPublicDto>($"EXEC sch_Padel.SP_ListerMatchsPublics @SiteId = {siteId}")
+            .ToListAsync();
+    }
+    public async Task<List<MaReservationDto>> ListerMesReservationsAsync(string matricule)
+    {
+        return await _context.Database
+            .SqlQuery<MaReservationDto>($"EXEC sch_Padel.SP_ListerMesReservations @Matricule = {matricule}")
+            .ToListAsync();
+    }
 }
