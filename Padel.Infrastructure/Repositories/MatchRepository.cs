@@ -62,4 +62,15 @@ public class MatchRepository : IMatchRepository
 
         return resultat.SingleOrDefault();
     }
+    public async Task AnnulerMatchAsync(int matchId, string appelantMatricule)
+    {
+        await _context.Database.ExecuteSqlInterpolatedAsync(
+            $"EXEC sch_Padel.SP_AnnulerMatch @MatchId = {matchId}, @AppelantMatricule = {appelantMatricule}");
+    }
+
+    public async Task DesinscrireJoueurAsync(int matchId, string membreMatricule, string appelantMatricule)
+    {
+        await _context.Database.ExecuteSqlInterpolatedAsync(
+            $"EXEC sch_Padel.SP_DesinscrireJoueur @MatchId = {matchId}, @MembreMatricule = {membreMatricule}, @AppelantMatricule = {appelantMatricule}");
+    }
 }

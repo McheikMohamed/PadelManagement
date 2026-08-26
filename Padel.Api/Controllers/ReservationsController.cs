@@ -53,4 +53,20 @@ public class ReservationsController : ControllerBase
 
         return Ok(inscription);
     }
+
+    [HttpDelete("{matchId}")]
+    public async Task<IActionResult> AnnulerReservation(int matchId)
+    {
+        var identite = (IdentiteAppelant)HttpContext.Items["Identite"]!;
+        await _reservationService.AnnulerReservationAsync(matchId, identite.Matricule);
+        return NoContent();
+    }
+
+    [HttpDelete("{matchId}/inscriptions/{membreMatricule}")]
+    public async Task<IActionResult> DesinscrireJoueur(int matchId, string membreMatricule)
+    {
+        var identite = (IdentiteAppelant)HttpContext.Items["Identite"]!;
+        await _reservationService.DesinscrireJoueurAsync(matchId, membreMatricule, identite.Matricule);
+        return NoContent();
+    }
 }
