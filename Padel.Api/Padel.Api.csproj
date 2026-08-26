@@ -10,4 +10,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Padel.Application\Padel.Application.csproj" />
+    <ProjectReference Include="..\Padel.Infrastructure\Padel.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

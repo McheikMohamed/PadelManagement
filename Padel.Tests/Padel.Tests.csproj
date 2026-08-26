@@ -18,4 +18,11 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Padel.Domain\Padel.Domain.csproj" />
+    <ProjectReference Include="..\Padel.Application\Padel.Application.csproj" />
+    <ProjectReference Include="..\Padel.Infrastructure\Padel.Infrastructure.csproj" />
+    <ProjectReference Include="..\Padel.Api\Padel.Api.csproj" />
+  </ItemGroup>
+
 </Project>
