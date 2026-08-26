@@ -16,4 +16,6 @@ public interface IMatchRepository
     Task<Match?> ObtenirParIdAsync(int matchId);
 
     Task<string?> ObtenirMembreParInscriptionAsync(int inscriptionId);
+    Task AnnulerMatchAsync(int matchId, string appelantMatricule);
+    Task DesinscrireJoueurAsync(int matchId, string membreMatricule, string appelantMatricule);
 }

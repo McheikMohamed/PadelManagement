@@ -74,6 +74,8 @@ public class ErrorHandlingMiddleware
         "MATCH_INCONNU" => HttpStatusCode.NotFound,
         "APPELANT_INCONNU" => HttpStatusCode.NotFound,
         "INSCRIPTION_INCONNUE" => HttpStatusCode.NotFound,
+        "ACTION_RESERVEE_ORGANISATEUR" => HttpStatusCode.Forbidden,
+        "DESINSCRIPTION_NON_AUTORISEE" => HttpStatusCode.Forbidden,
         _ => HttpStatusCode.BadRequest
     };
 }
