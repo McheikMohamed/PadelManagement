@@ -7,8 +7,6 @@ using Moq;
 using Padel.Application.Dtos;
 using Padel.Application.Exceptions;
 using Padel.Application.Interfaces;
-using Padel.Domain.Entities;
-using Padel.Domain.Enums;
 using Xunit;
 
 namespace Padel.Tests.Controllers;
@@ -24,7 +22,7 @@ public class PaiementsControllerTests : IClassFixture<WebApplicationFactory<Prog
 
     private HttpClient CreerClientAvecServicesMockes(
         Mock<IPaiementService>? paiementServiceMock = null,
-        Mock<IMembreRepository>? membreRepositoryMock = null)
+        Mock<IMembreService>? membreServiceMock = null)
     {
         var factoryConfiguree = _factory.WithWebHostBuilder(builder =>
         {
@@ -36,10 +34,10 @@ public class PaiementsControllerTests : IClassFixture<WebApplicationFactory<Prog
                     services.AddScoped(_ => paiementServiceMock.Object);
                 }
 
-                if (membreRepositoryMock is not null)
+                if (membreServiceMock is not null)
                 {
-                    services.RemoveAll<IMembreRepository>();
-                    services.AddScoped(_ => membreRepositoryMock.Object);
+                    services.RemoveAll<IMembreService>();
+                    services.AddScoped(_ => membreServiceMock.Object);
                 }
             });
         });
@@ -47,18 +45,19 @@ public class PaiementsControllerTests : IClassFixture<WebApplicationFactory<Prog
         return factoryConfiguree.CreateClient();
     }
 
-    private Mock<IMembreRepository> CreerMembreRepositoryMockAvecUnMembre(string matricule)
+    // Rappel : le middleware résout l'identité via IMembreService, pas IMembreRepository.
+    private Mock<IMembreService> CreerMembreServiceMockAvecUnMembre(string matricule)
     {
-        var mock = new Mock<IMembreRepository>();
-        mock.Setup(r => r.ObtenirParMatriculeAsync(matricule))
-            .ReturnsAsync(new Membre { Matricule = matricule, Type = TypeMembre.Global, SoldeDu = 0 });
+        var mock = new Mock<IMembreService>();
+        mock.Setup(s => s.ObtenirMembreAsync(matricule))
+            .ReturnsAsync(new MembreDto { Matricule = matricule, Type = "Global", SoldeDu = 0 });
         return mock;
     }
 
     [Fact]
     public async Task PostPaiement_CasValide_Retourne200()
     {
-        var membreRepoMock = CreerMembreRepositoryMockAvecUnMembre("G00001");
+        var membreServiceMock = CreerMembreServiceMockAvecUnMembre("G00001");
 
         var paiementServiceMock = new Mock<IPaiementService>();
         paiementServiceMock
@@ -72,7 +71,7 @@ public class PaiementsControllerTests : IClassFixture<WebApplicationFactory<Prog
                 EstRembourse = false
             });
 
-        var client = CreerClientAvecServicesMockes(paiementServiceMock, membreRepoMock);
+        var client = CreerClientAvecServicesMockes(paiementServiceMock, membreServiceMock);
         client.DefaultRequestHeaders.Add("X-Matricule", "G00001");
 
         var reponse = await client.PostAsync("/api/Paiements/10", null);
@@ -85,7 +84,7 @@ public class PaiementsControllerTests : IClassFixture<WebApplicationFactory<Prog
     [Fact]
     public async Task PostPaiement_NonAutorise_Retourne403AvecCode()
     {
-        var membreRepoMock = CreerMembreRepositoryMockAvecUnMembre("L00002");
+        var membreServiceMock = CreerMembreServiceMockAvecUnMembre("L00002");
 
         var paiementServiceMock = new Mock<IPaiementService>();
         paiementServiceMock
@@ -93,7 +92,7 @@ public class PaiementsControllerTests : IClassFixture<WebApplicationFactory<Prog
             .ThrowsAsync(new RegleMetierException(
                 "PAIEMENT_NON_AUTORISE", "Seul le membre concerné par cette inscription peut la payer."));
 
-        var client = CreerClientAvecServicesMockes(paiementServiceMock, membreRepoMock);
+        var client = CreerClientAvecServicesMockes(paiementServiceMock, membreServiceMock);
         client.DefaultRequestHeaders.Add("X-Matricule", "L00002");
 
         var reponse = await client.PostAsync("/api/Paiements/10", null);
@@ -106,14 +105,14 @@ public class PaiementsControllerTests : IClassFixture<WebApplicationFactory<Prog
     [Fact]
     public async Task PostRemboursement_CasValide_Retourne204()
     {
-        var membreRepoMock = CreerMembreRepositoryMockAvecUnMembre("G00003");
+        var membreServiceMock = CreerMembreServiceMockAvecUnMembre("G00003");
 
         var paiementServiceMock = new Mock<IPaiementService>();
         paiementServiceMock
             .Setup(s => s.RembourserAsync(50))
             .Returns(Task.CompletedTask);
 
-        var client = CreerClientAvecServicesMockes(paiementServiceMock, membreRepoMock);
+        var client = CreerClientAvecServicesMockes(paiementServiceMock, membreServiceMock);
         client.DefaultRequestHeaders.Add("X-Matricule", "G00003");
 
         var reponse = await client.PostAsync("/api/Paiements/50/remboursement", null);
