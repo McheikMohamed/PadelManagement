@@ -1,5 +1,24 @@
+# Build outputs
 bin/
 obj/
+
+# Visual Studio
 .vs/
 *.user
 *.suo
+
+# User Secrets (ne sont normalement PAS dans le repo, stockés hors projet par dotnet user-secrets)
+# mais gardé ici par précaution si jamais un fichier apparaissait par erreur
+**/secrets.json
+
+# Fichiers de configuration contenant des mots de passe en clair
+appsettings.Development.json
+appsettings.Test.json
+
+# Fichiers de test/couverture générés
+*.trx
+TestResults/
+coverage.cobertura.xml
+
+# Fichiers temporaires SQL Server Management Studio
+*.dtsx.dtsx
