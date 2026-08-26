@@ -40,4 +40,13 @@ public class MembreRepository : IMembreRepository
             .FromSqlInterpolated($"EXEC sch_Padel.SP_ListerMembres @SiteId = {siteId}")
             .ToListAsync();
     }
+    public async Task<string?> ObtenirMembreParInscriptionAsync(int inscriptionId)
+    {
+        var resultat = await _context.Database
+            .SqlQuery<string>(
+                $"EXEC sch_Padel.SP_SelectMembreParInscription @InscriptionId = {inscriptionId}")
+            .ToListAsync();
+
+        return resultat.SingleOrDefault();
+    }
 }

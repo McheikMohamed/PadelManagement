@@ -10,6 +10,6 @@ namespace Padel.Application.Interfaces;
 
 public interface IPaiementService
 {
-    Task<PaiementDto> TraiterPaiementAsync(int inscriptionId);
+    Task<PaiementDto> TraiterPaiementAsync(int inscriptionId, string appelantMatricule);
     Task RembourserAsync(int paiementId);
 }
