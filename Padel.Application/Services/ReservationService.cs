@@ -186,4 +186,12 @@ public class ReservationService : IReservationService
 
         await _matchRepository.DesinscrireJoueurAsync(matchId, membreMatricule, appelantMatricule);
     }
+    public async Task<List<MatchPublicDto>> ListerMatchsPublicsAsync(int? siteId)
+    {
+        return await _matchRepository.ListerMatchsPublicsAsync(siteId);
+    }
+    public async Task<List<MaReservationDto>> ListerMesReservationsAsync(string matricule)
+    {
+        return await _matchRepository.ListerMesReservationsAsync(matricule);
+    }
 }
