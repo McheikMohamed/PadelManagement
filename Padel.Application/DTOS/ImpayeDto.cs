@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Padel.Application.DTOS
+namespace Padel.Application.Dtos;
+
+public class ImpayeDto
 {
-    internal class ImpayeDto
-    {
-    }
+    public string Matricule { get; set; } = string.Empty;
+    public string Type { get; set; } = string.Empty;
+    public decimal SoldeDu { get; set; }
 }

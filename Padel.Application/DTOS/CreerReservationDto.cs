@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Padel.Application.DTOS
+namespace Padel.Application.Dtos;
+
+public class CreerReservationDto
 {
-    internal class CreerReservationDto
-    {
-    }
+    public int TerrainId { get; set; }
+    public DateTime DateHeureDebut { get; set; }
+    public bool EstPrive { get; set; } = true;
 }

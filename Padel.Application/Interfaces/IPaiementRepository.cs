@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Padel.Application.Interfaces
+namespace Padel.Application.Interfaces;
+
+public interface IPaiementRepository
 {
-    internal interface IPaiementRepository
-    {
-    }
+    Task<int> TraiterPaiementAsync(int inscriptionId, decimal montant);
+    Task RembourserAsync(int paiementId);
 }

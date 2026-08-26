@@ -4,9 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Padel.Application.Interfaces
+using Padel.Domain.Entities;
+
+namespace Padel.Application.Interfaces;
+
+public interface IMembreRepository
 {
-    internal interface IMembreRepository
-    {
-    }
+    Task CreerAsync(string matricule, string type, int? siteId);
+    Task<Membre?> ObtenirParMatriculeAsync(string matricule);
+    Task<List<Membre>> ListerAsync(int? siteId);
 }
