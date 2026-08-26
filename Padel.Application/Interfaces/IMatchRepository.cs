@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Padel.Application.Dtos;
+﻿using Padel.Application.Dtos;
 using Padel.Domain.Entities;
 
 namespace Padel.Application.Interfaces;
@@ -20,4 +14,6 @@ public interface IMatchRepository
     Task<int> InscrireJoueurAsync(int matchId, string membreMatricule, string appelantMatricule);
 
     Task<Match?> ObtenirParIdAsync(int matchId);
+
+    Task<string?> ObtenirMembreParInscriptionAsync(int inscriptionId);
 }

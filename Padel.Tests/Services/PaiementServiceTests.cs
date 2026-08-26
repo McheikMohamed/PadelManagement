@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Moq;
+﻿using Moq;
+using Padel.Application.Exceptions;
 using Padel.Application.Interfaces;
 using Padel.Application.Services;
+using Padel.Domain.Entities;
+using Padel.Domain.Enums;
 using Xunit;
 
 namespace Padel.Tests.Services;
@@ -14,58 +11,80 @@ namespace Padel.Tests.Services;
 public class PaiementServiceTests
 {
     private readonly Mock<IPaiementRepository> _paiementRepositoryMock;
+    private readonly Mock<IMatchRepository> _matchRepositoryMock;
+    private readonly Mock<IAdministrateurRepository> _administrateurRepositoryMock;
     private readonly PaiementService _paiementService;
 
     public PaiementServiceTests()
     {
         _paiementRepositoryMock = new Mock<IPaiementRepository>();
-        _paiementService = new PaiementService(_paiementRepositoryMock.Object);
+        _matchRepositoryMock = new Mock<IMatchRepository>();
+        _administrateurRepositoryMock = new Mock<IAdministrateurRepository>();
+        _paiementService = new PaiementService(
+            _paiementRepositoryMock.Object,
+            _matchRepositoryMock.Object,
+            _administrateurRepositoryMock.Object);
     }
 
     [Fact]
-    public async Task TraiterPaiementAsync_RetournePaiementDtoAvecMontantFixe()
+    public async Task TraiterPaiementAsync_InscriptionInconnue_LanceRegleMetierException()
     {
-        // Arrange
-        _paiementRepositoryMock
-            .Setup(r => r.TraiterPaiementAsync(10, 15.00m))
-            .ReturnsAsync(100);
+        _matchRepositoryMock.Setup(r => r.ObtenirMembreParInscriptionAsync(999)).ReturnsAsync((string?)null);
 
-        // Act
-        var resultat = await _paiementService.TraiterPaiementAsync(10);
+        var ex = await Assert.ThrowsAsync<RegleMetierException>(
+            () => _paiementService.TraiterPaiementAsync(999, "G00001"));
 
-        // Assert
+        Assert.Equal("INSCRIPTION_INCONNUE", ex.Code);
+    }
+
+    [Fact]
+    public async Task TraiterPaiementAsync_AppelantEstLeMembreConcerne_RetournePaiementDto()
+    {
+        _matchRepositoryMock.Setup(r => r.ObtenirMembreParInscriptionAsync(10)).ReturnsAsync("G00001");
+        _paiementRepositoryMock.Setup(r => r.TraiterPaiementAsync(10, 15.00m)).ReturnsAsync(100);
+
+        var resultat = await _paiementService.TraiterPaiementAsync(10, "G00001");
+
         Assert.Equal(100, resultat.PaiementId);
-        Assert.Equal(10, resultat.InscriptionId);
         Assert.Equal(15.00m, resultat.Montant);
-        Assert.False(resultat.EstRembourse);
-        Assert.Null(resultat.DateRemboursement);
     }
 
     [Fact]
-    public async Task TraiterPaiementAsync_AppelleRepositoryAvecMontantFixeQuelQueSoitInscriptionId()
+    public async Task TraiterPaiementAsync_AppelantDifferentEtNonAdmin_LanceRegleMetierException()
     {
-        // Arrange
-        _paiementRepositoryMock
-            .Setup(r => r.TraiterPaiementAsync(It.IsAny<int>(), It.IsAny<decimal>()))
-            .ReturnsAsync(1);
+        _matchRepositoryMock.Setup(r => r.ObtenirMembreParInscriptionAsync(10)).ReturnsAsync("G00001");
+        _administrateurRepositoryMock
+            .Setup(r => r.ObtenirParMatriculeAsync("L00002"))
+            .ReturnsAsync((Administrateur?)null);
 
-        // Act
-        await _paiementService.TraiterPaiementAsync(42);
+        var ex = await Assert.ThrowsAsync<RegleMetierException>(
+            () => _paiementService.TraiterPaiementAsync(10, "L00002"));
 
-        // Assert : le montant transmis au Repository doit toujours être 15.00m, jamais autre chose
-        _paiementRepositoryMock.Verify(r => r.TraiterPaiementAsync(42, 15.00m), Times.Once);
+        Assert.Equal("PAIEMENT_NON_AUTORISE", ex.Code);
+        _paiementRepositoryMock.Verify(r => r.TraiterPaiementAsync(It.IsAny<int>(), It.IsAny<decimal>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task TraiterPaiementAsync_AppelantEstAdministrateur_AutoriseLePaiement()
+    {
+        _matchRepositoryMock.Setup(r => r.ObtenirMembreParInscriptionAsync(10)).ReturnsAsync("G00001");
+        _administrateurRepositoryMock
+            .Setup(r => r.ObtenirParMatriculeAsync("AG0001"))
+            .ReturnsAsync(new Administrateur { Matricule = "AG0001", Type = TypeAdmin.Global, SiteId = null });
+        _paiementRepositoryMock.Setup(r => r.TraiterPaiementAsync(10, 15.00m)).ReturnsAsync(101);
+
+        var resultat = await _paiementService.TraiterPaiementAsync(10, "AG0001");
+
+        Assert.Equal(101, resultat.PaiementId);
     }
 
     [Fact]
     public async Task RembourserAsync_AppelleLeRepositoryAvecLeBonPaiementId()
     {
-        // Arrange
         _paiementRepositoryMock.Setup(r => r.RembourserAsync(5)).Returns(Task.CompletedTask);
 
-        // Act
         await _paiementService.RembourserAsync(5);
 
-        // Assert
         _paiementRepositoryMock.Verify(r => r.RembourserAsync(5), Times.Once);
     }
 }

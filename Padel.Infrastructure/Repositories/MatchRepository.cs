@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Padel.Application.Dtos;
 using Padel.Application.Interfaces;
 using Padel.Domain.Entities;
@@ -57,5 +51,15 @@ public class MatchRepository : IMatchRepository
             .ToListAsync();
 
         return resultats.SingleOrDefault();
+    }
+
+    public async Task<string?> ObtenirMembreParInscriptionAsync(int inscriptionId)
+    {
+        var resultat = await _context.Database
+            .SqlQuery<string>(
+                $"EXEC sch_Padel.SP_SelectMembreParInscription @InscriptionId = {inscriptionId}")
+            .ToListAsync();
+
+        return resultat.SingleOrDefault();
     }
 }
