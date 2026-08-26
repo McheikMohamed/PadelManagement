@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Installer .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restaurer les dépendances
+        run: |
+          dotnet restore Padel.Domain/Padel.Domain.csproj
+          dotnet restore Padel.Application/Padel.Application.csproj
+          dotnet restore Padel.Infrastructure/Padel.Infrastructure.csproj
+          dotnet restore Padel.Api/Padel.Api.csproj
+          dotnet restore Padel.Tests/Padel.Tests.csproj
+
+      - name: Compiler la solution (hors UI WinForms)
+        run: |
+          dotnet build Padel.Domain/Padel.Domain.csproj --configuration Release
+          dotnet build Padel.Application/Padel.Application.csproj --configuration Release
+          dotnet build Padel.Infrastructure/Padel.Infrastructure.csproj --configuration Release
+          dotnet build Padel.Api/Padel.Api.csproj --configuration Release
+          dotnet build Padel.Tests/Padel.Tests.csproj --configuration Release
+
+      - name: Exécuter les tests
+        run: dotnet test Padel.Tests/Padel.Tests.csproj --no-build --configuration Release --verbosity normal
