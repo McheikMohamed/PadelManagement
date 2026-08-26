@@ -10,7 +10,7 @@ namespace Padel.Application.Interfaces;
 
 public interface ISiteService
 {
-    Task<SiteDto> CreerSiteAsync(CreerSiteDto dto);
+    Task<SiteDto> CreerSiteAsync(CreerSiteDto dto, string appelantMatricule);
     Task<List<SiteDto>> ListerSitesAsync();
     Task<SiteDto?> ObtenirSiteAsync(int siteId);
 }
