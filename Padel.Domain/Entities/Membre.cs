@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Padel.Domain.Enums;
+
+namespace Padel.Domain.Entities;
+
+public class Membre
+{
+    public string Matricule { get; set; } = string.Empty;
+    public TypeMembre Type { get; set; }
+    public int? SiteId { get; set; }  // null pour Global/Libre
+    public decimal SoldeDu { get; set; }
+    public DateOnly? DateProchaineReservationAutorisee { get; set; }
+}
