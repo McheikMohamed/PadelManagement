@@ -1,28 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Padel.Application.Dtos;
+﻿using Padel.Application.Dtos;
+using Padel.Application.Exceptions;
 using Padel.Application.Interfaces;
+using Padel.Domain.Enums;
 
 namespace Padel.Application.Services;
 
 public class SiteService : ISiteService
 {
     private readonly ISiteRepository _siteRepository;
+    private readonly IAdministrateurRepository _administrateurRepository;
 
-    public SiteService(ISiteRepository siteRepository)
+    public SiteService(ISiteRepository siteRepository, IAdministrateurRepository administrateurRepository)
     {
         _siteRepository = siteRepository;
+        _administrateurRepository = administrateurRepository;
     }
 
-    public async Task<SiteDto> CreerSiteAsync(CreerSiteDto dto)
+    public async Task<SiteDto> CreerSiteAsync(CreerSiteDto dto, string appelantMatricule)
     {
+        // CF-AA-015 : la création d'un site est réservée à l'administrateur global.
+        var appelant = await _administrateurRepository.ObtenirParMatriculeAsync(appelantMatricule);
+
+        if (appelant is null)
+        {
+            throw new RegleMetierException("APPELANT_INCONNU", "Administrateur appelant inconnu.");
+        }
+
+        if (appelant.Type != TypeAdmin.Global)
+        {
+            throw new RegleMetierException(
+                "ACTION_RESERVEE_GLOBAL",
+                "Seul un administrateur global peut créer un site.");
+        }
+
         if (string.IsNullOrWhiteSpace(dto.Nom))
         {
-            throw new ArgumentException("Le nom du site est obligatoire.");
+            throw new RegleMetierException("NOM_OBLIGATOIRE", "Le nom du site est obligatoire.");
         }
 
         var siteId = await _siteRepository.CreerAsync(dto.Nom);
