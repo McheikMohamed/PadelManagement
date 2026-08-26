@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Padel.Application.DTOS
+namespace Padel.Application.Dtos;
+
+public class CreerSiteDto
 {
-    internal class CreerSiteDto
-    {
-    }
+    public string Nom { get; set; } = string.Empty;
 }

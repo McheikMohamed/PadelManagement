@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Padel.Application.DTOS
+namespace Padel.Application.Dtos;
+
+public class AdministrateurDto
 {
-    internal class AdministrateurDto
-    {
-    }
+    public string Matricule { get; set; } = string.Empty;
+    public string Type { get; set; } = string.Empty;
+    public int? SiteId { get; set; }
 }

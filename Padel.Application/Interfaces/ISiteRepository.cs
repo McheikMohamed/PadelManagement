@@ -4,9 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Padel.Application.Interfaces
+using Padel.Domain.Entities;
+
+namespace Padel.Application.Interfaces;
+
+public interface ISiteRepository
 {
-    internal interface ISiteRepository
-    {
-    }
+    Task<int> CreerAsync(string nom);
+    Task<List<Site>> ListerAsync();
+    Task<Site?> ObtenirParIdAsync(int siteId);
 }
