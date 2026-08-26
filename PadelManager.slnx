@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="Padel.Api/Padel.Api.csproj" />
+  <Project Path="Padel.Application/Padel.Application.csproj" />
+  <Project Path="Padel.Domain/Padel.Domain.csproj" />
+  <Project Path="Padel.Infrastructure/Padel.Infrastructure.csproj" />
+  <Project Path="Padel.Tests/Padel.Tests.csproj" />
+  <Project Path="Padel.UI.Admin/Padel.UI.Admin.csproj" />
+  <Project Path="Padel.UI.Membre/Padel.UI.Membre.csproj" />
+</Solution>
