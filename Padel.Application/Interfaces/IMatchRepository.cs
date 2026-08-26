@@ -4,9 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Padel.Application.Interfaces
+using Padel.Application.Dtos;
+using Padel.Domain.Entities;
+
+namespace Padel.Application.Interfaces;
+
+public interface IMatchRepository
 {
-    internal interface IMatchRepository
-    {
-    }
+    Task<List<CreneauDisponibleDto>> ListerCreneauxDisponiblesAsync(
+        int siteId, DateOnly date, int? terrainId);
+
+    Task<int> CreerReservationAsync(
+        int terrainId, DateTime dateHeureDebut, string organisateurMatricule, bool estPrive);
+
+    Task<int> InscrireJoueurAsync(int matchId, string membreMatricule, string appelantMatricule);
+
+    Task<Match?> ObtenirParIdAsync(int matchId);
 }

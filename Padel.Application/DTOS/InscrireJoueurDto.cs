@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Padel.Application.DTOS
+namespace Padel.Application.Dtos;
+
+public class InscrireJoueurDto
 {
-    internal class InscrireJoueurDto
-    {
-    }
+    public int MatchId { get; set; }
+    public string MembreMatricule { get; set; } = string.Empty;
 }

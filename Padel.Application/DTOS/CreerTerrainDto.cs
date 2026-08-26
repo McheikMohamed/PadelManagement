@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Padel.Application.DTOS
+namespace Padel.Application.Dtos;
+
+public class CreerTerrainDto
 {
-    internal class CreerTerrainDto
-    {
-    }
+    public int SiteId { get; set; }
+    public int Numero { get; set; }
 }
