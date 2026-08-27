@@ -22,6 +22,7 @@ public class MatchConfiguration : IEntityTypeConfiguration<Match>
         builder.Property(m => m.DateHeureDebut).HasColumnName("DateHeureDebut");
         builder.Property(m => m.DateHeureFin).HasColumnName("DateHeureFin");
         builder.Property(m => m.Prix).HasColumnName("Prix");
+        builder.Property(m => m.PenaliteTraitee).HasColumnName("PenaliteTraitee");
 
         builder.Property(m => m.Statut)
             .HasColumnName("Statut")

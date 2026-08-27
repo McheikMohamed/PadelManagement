@@ -338,4 +338,81 @@ public class ReservationServiceTests
         Assert.Equal(51, resultat.InscriptionId);
         Assert.Equal("S00001", resultat.MembreMatricule);
     }
+    [Fact]
+    public async Task AnnulerReservationAsync_AppelantEstOrganisateur_AppelleRepository()
+    {
+        var match = new MatchEntity
+        {
+            MatchId = 1,
+            TerrainId = 1,
+            OrganisateurMatricule = "G00001",
+            DateHeureDebut = DateTime.Now.AddDays(1),
+            DateHeureFin = DateTime.Now.AddDays(1).AddMinutes(105),
+            Statut = StatutMatch.Prive
+        };
+        _matchRepositoryMock.Setup(r => r.ObtenirParIdAsync(1)).ReturnsAsync(match);
+
+        await _reservationService.AnnulerReservationAsync(1, "G00001");
+
+        _matchRepositoryMock.Verify(r => r.AnnulerMatchAsync(1, "G00001"), Times.Once);
+    }
+
+    [Fact]
+    public async Task AnnulerReservationAsync_AppelantNestPasOrganisateur_LanceRegleMetierException()
+    {
+        var match = new MatchEntity
+        {
+            MatchId = 1,
+            TerrainId = 1,
+            OrganisateurMatricule = "G00001",
+            DateHeureDebut = DateTime.Now.AddDays(1),
+            DateHeureFin = DateTime.Now.AddDays(1).AddMinutes(105),
+            Statut = StatutMatch.Prive
+        };
+        _matchRepositoryMock.Setup(r => r.ObtenirParIdAsync(1)).ReturnsAsync(match);
+
+        var ex = await Assert.ThrowsAsync<RegleMetierException>(
+            () => _reservationService.AnnulerReservationAsync(1, "L00002"));
+
+        Assert.Equal("ACTION_RESERVEE_ORGANISATEUR", ex.Code);
+    }
+
+    [Fact]
+    public async Task DesinscrireJoueurAsync_OrganisateurEssaieDeSeDesinscrire_LanceRegleMetierException()
+    {
+        var match = new MatchEntity
+        {
+            MatchId = 1,
+            TerrainId = 1,
+            OrganisateurMatricule = "G00001",
+            DateHeureDebut = DateTime.Now.AddDays(1),
+            DateHeureFin = DateTime.Now.AddDays(1).AddMinutes(105),
+            Statut = StatutMatch.Public
+        };
+        _matchRepositoryMock.Setup(r => r.ObtenirParIdAsync(1)).ReturnsAsync(match);
+
+        var ex = await Assert.ThrowsAsync<RegleMetierException>(
+            () => _reservationService.DesinscrireJoueurAsync(1, "G00001", "G00001"));
+
+        Assert.Equal("ORGANISATEUR_DOIT_ANNULER", ex.Code);
+    }
+
+    [Fact]
+    public async Task DesinscrireJoueurAsync_CasValide_AppelleRepository()
+    {
+        var match = new MatchEntity
+        {
+            MatchId = 1,
+            TerrainId = 1,
+            OrganisateurMatricule = "G00001",
+            DateHeureDebut = DateTime.Now.AddDays(1),
+            DateHeureFin = DateTime.Now.AddDays(1).AddMinutes(105),
+            Statut = StatutMatch.Public
+        };
+        _matchRepositoryMock.Setup(r => r.ObtenirParIdAsync(1)).ReturnsAsync(match);
+
+        await _reservationService.DesinscrireJoueurAsync(1, "L00002", "L00002");
+
+        _matchRepositoryMock.Verify(r => r.DesinscrireJoueurAsync(1, "L00002", "L00002"), Times.Once);
+    }
 }

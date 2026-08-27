@@ -142,4 +142,56 @@ public class ReservationService : IReservationService
             DatePaiement = null
         };
     }
+    public async Task AnnulerReservationAsync(int matchId, string appelantMatricule)
+    {
+        var match = await _matchRepository.ObtenirParIdAsync(matchId);
+        if (match is null)
+        {
+            throw new RegleMetierException("MATCH_INCONNU", "Match inconnu.");
+        }
+
+        if (match.Statut == StatutMatch.Annule)
+        {
+            throw new RegleMetierException("MATCH_DEJA_ANNULE", "Ce match est déjà annulé.");
+        }
+
+        if (match.OrganisateurMatricule != appelantMatricule)
+        {
+            throw new RegleMetierException(
+                "ACTION_RESERVEE_ORGANISATEUR", "Seul l'organisateur peut annuler ce match.");
+        }
+
+        await _matchRepository.AnnulerMatchAsync(matchId, appelantMatricule);
+    }
+
+    public async Task DesinscrireJoueurAsync(int matchId, string membreMatricule, string appelantMatricule)
+    {
+        var match = await _matchRepository.ObtenirParIdAsync(matchId);
+        if (match is null)
+        {
+            throw new RegleMetierException("MATCH_INCONNU", "Match inconnu.");
+        }
+
+        if (membreMatricule == match.OrganisateurMatricule)
+        {
+            throw new RegleMetierException(
+                "ORGANISATEUR_DOIT_ANNULER", "L'organisateur doit annuler le match entier.");
+        }
+
+        if (appelantMatricule != membreMatricule)
+        {
+            throw new RegleMetierException(
+                "DESINSCRIPTION_NON_AUTORISEE", "Seul le joueur concerné peut se désinscrire.");
+        }
+
+        await _matchRepository.DesinscrireJoueurAsync(matchId, membreMatricule, appelantMatricule);
+    }
+    public async Task<List<MatchPublicDto>> ListerMatchsPublicsAsync(int? siteId)
+    {
+        return await _matchRepository.ListerMatchsPublicsAsync(siteId);
+    }
+    public async Task<List<MaReservationDto>> ListerMesReservationsAsync(string matricule)
+    {
+        return await _matchRepository.ListerMesReservationsAsync(matricule);
+    }
 }
