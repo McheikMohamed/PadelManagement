@@ -11,10 +11,6 @@ obj/
 # mais gardé ici par précaution si jamais un fichier apparaissait par erreur
 **/secrets.json
 
-# Fichiers de configuration contenant des mots de passe en clair
-appsettings.Development.json
-appsettings.Test.json
-
 # Fichiers de test/couverture générés
 *.trx
 TestResults/
